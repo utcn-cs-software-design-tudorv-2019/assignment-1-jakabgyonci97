@@ -14,8 +14,9 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         LoginController lc = new LoginController();
-        StudentController sc = new StudentController();
-        AdminController ac = new AdminController();
+        //StudentController sc = new StudentController();
+        //AdminController ac = new AdminController();
+
     }
 
 }

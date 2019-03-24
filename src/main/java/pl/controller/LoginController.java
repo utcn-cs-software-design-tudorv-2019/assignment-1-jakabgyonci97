@@ -6,28 +6,23 @@ import dal.entity.User;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 
 public class LoginController {
-    Stage window;
+    private Stage window;
     private TextField userName;
     private PasswordField password;
-    private Button login;
 
-
-    public LoginController() throws FileNotFoundException {
+    public LoginController(){
         window = new Stage();
+        window.initStyle(StageStyle.TRANSPARENT);
         window.setTitle("LOGIN");
 
         BorderPane layout = new BorderPane();
@@ -35,7 +30,7 @@ public class LoginController {
         VBox topPane = new VBox(40);
         topPane.setAlignment(Pos.CENTER);
         topPane.setPadding(new Insets(100,20,20,20));
-        ImageView img = new ImageView(new Image(new FileInputStream("C:\\Users\\jakab\\IdeaProjects\\Assignment1\\src\\main\\resources\\images\\loginIcon.png")));
+        ImageView img = new ImageView(new Image("https://www.amigio.ro/wp-content/uploads/2012/03/angajam-programator-web-joburi.png"));
         img.setFitHeight(300);
         img.setFitWidth(300);
         topPane.getChildren().add(img);
@@ -59,7 +54,7 @@ public class LoginController {
         VBox bottomPane = new VBox();
         bottomPane.setAlignment(Pos.CENTER);
         bottomPane.setPadding(new Insets(20,20,100,20));
-        login = new Button("Login");
+        Button login = new Button("Login");
         login.setOnAction(e->handleButtonEvent());
         bottomPane.getChildren().add(login);
 
@@ -78,16 +73,24 @@ public class LoginController {
         String passwordStr = password.getText();
 
         LoginBLL loginBLL = new LoginBLL();
-        int userType = loginBLL.loginOperation(userNameStr,passwordStr);
-        AdminController ac;
-        StudentController sc;
-        if(userType == 1)
-            ac = new AdminController();
-        else
-            sc = new StudentController();
-        window.close();
+        User user = loginBLL.loginOperation(userNameStr,passwordStr);
+        System.out.println(user);
+        int userType = -1;
+        if(user != null)
+            userType = user.getUserType();
 
-
+        switch(userType){
+            case 0: {
+                    Student student = loginBLL.loginAsStudent(user.getId());
+                    if(student != null){
+                        StudentController sc = new StudentController(student);
+                        window.close();
+                    }
+                }
+                break;
+            case 1: { AdminController ac = new AdminController();window.close();}break;
+            default: {userName.clear();password.clear();}break;
+        }
     }
 
 }

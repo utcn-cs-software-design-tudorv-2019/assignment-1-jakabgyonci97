@@ -25,11 +25,14 @@ public class User {
         super();
     }
 
-    public User(int id, String userName, String password, UserType userType) {
+    public User(int id, String userName, String password, int userType) {
         this.id = id;
         this.userName = userName;
         this.password = password;
-        this.userType = userType;
+        switch(userType){
+            case 0: this.userType = UserType.STUDENT;break;
+            case 1: this.userType = UserType.ADMIN;break;
+        }
     }
 
     public int getId() {
@@ -60,9 +63,11 @@ public class User {
         return userType.getValue();
     }
 
-    public void setUserType(int userT) {
-        if(userT == 0) userType = UserType.STUDENT;
-        userType = UserType.ADMIN;
+    public void setUserType(int userType) {
+        switch(userType){
+            case 0: this.userType = UserType.STUDENT;break;
+            case 1: this.userType = UserType.ADMIN;break;
+        }
     }
 
     @Override

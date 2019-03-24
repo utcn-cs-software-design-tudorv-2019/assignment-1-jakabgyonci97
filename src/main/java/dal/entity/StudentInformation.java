@@ -1,7 +1,22 @@
 package dal.entity;
 
 public class StudentInformation {
-    public enum scholarShip{NONE,MERIT,ACADEMIC};
+    public enum scholarShip{
+        NONE{
+            public int getValueInt(){return 0;}
+            public String getValueString(){return "NONE";}
+        },
+        MERIT{
+            public int getValueInt(){return 1;}
+            public String getValueString(){return "MERIT";}
+        },
+        ACADEMIC{
+            public int getValueInt(){return 2;}
+            public String getValueString(){return "ACADEMIC";}
+        };
+        public abstract int getValueInt();
+        public abstract String getValueString();
+    };
     private int id;
     private int idStudent;
     private String group;
@@ -12,11 +27,15 @@ public class StudentInformation {
         super();
     }
 
-    public StudentInformation(int id, int idStudent, String group, scholarShip scholarShipState, double gradeAvrg) {
+    public StudentInformation(int id, int idStudent, String group, int scholarShipState, double gradeAvrg) {
         this.id = id;
         this.idStudent = idStudent;
         this.group = group;
-        this.scholarShipState = scholarShipState;
+        switch(scholarShipState){
+            case 0: this.scholarShipState = scholarShip.NONE;break;
+            case 1: this.scholarShipState = scholarShip.MERIT;break;
+            case 2: this.scholarShipState = scholarShip.ACADEMIC;break;
+        }
         this.gradeAvrg = gradeAvrg;
     }
 

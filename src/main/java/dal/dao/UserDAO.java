@@ -17,7 +17,7 @@ public class UserDAO extends AbstractDAO<User> {
             connection = ConnectionFactory.getConnection();
             if(connection != null){
                 System.out.println("Connection established!");
-                //System.out.println("User login request authentication!Data: "+userName+" "+password);
+
 
                 String sql = "SELECT * FROM user WHERE userName = '" + userName + "' AND password = '" + password +"';";
                 statement = connection.createStatement();
@@ -28,11 +28,9 @@ public class UserDAO extends AbstractDAO<User> {
                     userName = resultSet.getString("userName");
                     password = resultSet.getString("password");
                     int userType = resultSet.getInt("userType");
-                    user = new User();
-                    user.setId(id);
-                    user.setUserName(userName);
-                    user.setPassword(password);
-                    user.setUserType(userType);
+
+                    user = new User(id,userName,password,userType);
+
                 }
             }
 
