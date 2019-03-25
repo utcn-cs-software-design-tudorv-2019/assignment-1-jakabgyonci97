@@ -1,27 +1,29 @@
 package pl.controller;
 
+import bll.AdminBLL;
+import dal.entity.Student;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import pl.model.StudentProfile;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AdminController {
+    //
+    private Student student;
+    private AdminBLL adminBLL;
     //crud on student
-    private TableView<Object> students;
+    private TableView<StudentProfile> students;
     private TextField identifNum;
     private TextField firstName;
     private TextField lastName;
     private TextField group;
     private TextField average;
     private TextField scholarShup;
-
     private ProgressBar fullInfo;
-    private Button viewProfileButton;
-    private Button createStudentButton;
-    private Button updateStudentButton;
-    private Button deleteStudentButton;
 
     //generate reports
     private TextField searchField;
@@ -30,10 +32,9 @@ public class AdminController {
     private Label groupL;
     private DatePicker startDate;
     private DatePicker endDate;
-    private Button searchButton;
-    private Button filterButton;
     private ListView<String> activities;
     public AdminController(){
+        adminBLL = new AdminBLL();
         Stage window = new Stage();
         window.setTitle("Administrator Profile");
 
@@ -70,13 +71,13 @@ public class AdminController {
         textFieldList.add(scholarShup);
 
         fullInfo = new ProgressBar();
-        viewProfileButton = new Button("View Profile");
+        Button viewProfileButton = new Button("View Profile");
         viewProfileButton.setOnAction(e->handleViewProfile());
-        createStudentButton = new Button("Create");
+        Button createStudentButton = new Button("Create");
         createStudentButton.setOnAction(e->handleCreateStudent());
-        updateStudentButton = new Button("Update");
+        Button updateStudentButton = new Button("Update");
         updateStudentButton.setOnAction(e->handleUpdateStudent());
-        deleteStudentButton = new Button("Delete");
+        Button deleteStudentButton = new Button("Delete");
         deleteStudentButton.setOnAction(e->handleDeleteStudent());
         buttons.add(viewProfileButton);
         buttons.add(createStudentButton);
@@ -93,8 +94,10 @@ public class AdminController {
         groupL = new Label("info");
         startDate = new DatePicker();
         endDate = new DatePicker();
-        searchButton = new Button("Search");
-        filterButton = new Button("Filter");
+        Button searchButton = new Button("Search");
+        searchButton.setOnAction(e->handleStudentSearch());
+        Button filterButton = new Button("Filter");
+        filterButton.setOnAction(e->handleFilterAction());
         activities = new ListView<>();
 
         List<Label> labels =  new ArrayList<>();
@@ -109,9 +112,40 @@ public class AdminController {
 
     }
 
-    private void handleCreateStudent(){}
+    private void handleCreateStudent(){
+        String idStudentText = identifNum.getText();
+        String firstNameText = firstName.getText();
+        String lastNameText = lastName.getText();
+        String groupText = group.getText();
+        String averageText = average.getText();
+        String scholarShipText = scholarShup.getText();
+        adminBLL.createStudent(idStudentText,firstNameText,lastNameText,groupText,averageText,scholarShipText);
+    }
 
-    private void handleUpdateStudent(){}
+    private void handleUpdateStudent(){
+        String firstNameText = firstName.getText();
+        String lastNameText = lastName.getText();
+        String groupText = group.getText();
+        String averageText = average.getText();
+        String scholarShipText = scholarShup.getText();
 
-    private void handleDeleteStudent(){}
+        adminBLL.updateStudent(student,firstNameText,lastNameText,groupText,averageText,scholarShipText);
+
+    }
+
+    private void handleDeleteStudent(){
+        adminBLL.deleteStudent(student);
+    }
+
+    private void handleStudentSearch(){
+        String studentID = searchField.getText();
+        adminBLL.findStudent(studentID);
+    }
+
+    private void handleFilterAction(){
+        LocalDate dateStart = startDate.getValue();
+        LocalDate dateEnd = endDate.getValue();
+        adminBLL.filterActivities(student,dateStart,dateEnd);
+    }
+
 }

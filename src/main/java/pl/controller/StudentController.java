@@ -1,10 +1,8 @@
 package pl.controller;
 
 import bll.StudentBLL;
-import dal.entity.ContactInformation;
-import dal.entity.PersonalInformation;
-import dal.entity.Student;
-import dal.entity.StudentInformation;
+import dal.entity.*;
+import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -18,7 +16,7 @@ public class StudentController {
     private PersonalInformation pi;
     private StudentInformation si;
     private ContactInformation ci;
-    StudentBLL studentBLL;
+    private Course course;
 
     //personal information
     private TextField firstName; private Label firstNameLabel;
@@ -48,15 +46,23 @@ public class StudentController {
     private TextField searchField;
     private TextField keyField;
 
+    //error log
+    private TextArea errorlog;
+
     public StudentController(Student student){
         this.student = student;
-        studentBLL = new StudentBLL();
-        pi = studentBLL.viewPersonalInfo(student);
-        si = studentBLL.viewStudentInfo(student);
-        ci = studentBLL.viewContactInfo(student);
+        pi = (new StudentBLL()).viewPersonalInfo(student);
+        si = (new StudentBLL()).viewStudentInfo(student);
+        ci = (new StudentBLL()).viewContactInfo(student);
 
         Stage window = new Stage();
         window.setTitle("Student Profile");
+        errorlog = new TextArea();
+        errorlog.setLayoutX(630);
+        errorlog.setLayoutY(30);
+        errorlog.setPrefSize(550,100);
+        errorlog.setPromptText("Error messages will appear here");
+        errorlog.setEditable(false);
 
         TabPane layout = new TabPane();
         Tab tab1 = new Tab("Personal Info");
@@ -80,8 +86,10 @@ public class StudentController {
         viewPersonalInfo(pi);
         viewStudentInfo(si);
         viewContactInfo(ci);
+        viewEnrolledCourses();
     }
 
+    /**StudentUI tab initializers*/
     private void initiatePersonalInfoTab(Tab personalInfo){
         List<TextField> textFields = new ArrayList<>();
         List<Label> labels = new ArrayList<>();
@@ -102,9 +110,8 @@ public class StudentController {
         Button updatePersonal = new Button("Update");buttons.add(updatePersonal);
         updatePersonal.setOnAction(e->handlePersonalInfoUpdate());
 
-        StudentTabCreator.createPersonal(personalInfo,textFields,labels,buttons);
+        StudentTabCreator.createPersonal(personalInfo,textFields,labels,buttons,errorlog);
     }
-
     private void initiateStudentInfoTab(Tab studentInfo){
         List<TextField> textFields = new ArrayList<>();
         List<Label> labels = new ArrayList<>();
@@ -129,7 +136,6 @@ public class StudentController {
 
         StudentTabCreator.createStudent(studentInfo,textFields,labels,buttons);
     }
-
     private void initiateContactInfoTab(Tab contactInfo){
         List<TextField> textFields = new ArrayList<>();
         List<Label> labels = new ArrayList<>();
@@ -152,7 +158,6 @@ public class StudentController {
 
         StudentTabCreator.createContact(contactInfo,textFields,labels,buttons);
     }
-
     private void initiateEnrollmentTab(Tab enrollmentInfo){
         List<Label> labels = new ArrayList<>();
         courses = new ListView<>();
@@ -168,6 +173,8 @@ public class StudentController {
         StudentTabCreator.createCourse(enrollmentInfo,searchField,keyField,labels,searchButton,enrollButton,courses);
     }
 
+    /**button actionListeners*/
+    /**create/view/update student's personal information*/
     private void viewPersonalInfo(PersonalInformation pi){
         firstNameLabel.setText("No information yet");
         lastNameLabel.setText("No information yet");
@@ -186,29 +193,108 @@ public class StudentController {
         if(!pi.getPnc().isEmpty())
             pncLabel.setText(pi.getPnc());
     }
+    private void handlePersonalInfoCreation(){
+        String firstNameText = firstName.getText();
+        String lastNameText = lastName.getText();
+        String icnText = icn.getText();
+        String pncText = pnc.getText();
+        cleanPersonalInfoTextFields();
 
+        String message = (new StudentBLL()).createPersonalInfo(student,firstNameText,lastNameText,icnText,pncText);
+        if(message != null)
+            errorlog.setText(message);
+        else{
+            pi = (new StudentBLL()).viewPersonalInfo(student);
+            viewPersonalInfo(pi);
+        }
+    }
+    private void handlePersonalInfoUpdate(){
+        String firstNameText = firstName.getText();
+        String lastNameText = lastName.getText();
+        String icnText = icn.getText();
+        String pncText = pnc.getText();
+        cleanPersonalInfoTextFields();
+
+        String message = (new StudentBLL()).updatePersonalInfo(pi,firstNameText,lastNameText,icnText,pncText);
+        if(message != null) errorlog.setText(message);
+        else{
+            pi = (new StudentBLL()).viewPersonalInfo(student);
+            viewPersonalInfo(pi);
+        }
+    }
+    private void cleanPersonalInfoTextFields(){
+        firstName.clear();
+        lastName.clear();
+        icn.clear();
+        pnc.clear();
+    }
+
+    /**create/view/update/delete student's student information*/
     private void viewStudentInfo(StudentInformation si){
         idStudentLabel.setText("No information yet");
         groupLabel.setText("No information yet");
         scholarShipLabel.setText("No information yet");
         gradesLabel.setText("No information yet");
 
-        if(si == null) return;
+        if(si == null) {createStudent.setVisible(true);return;}
         else createStudent.setVisible(false);
 
         idStudentLabel.setText(Integer.toString(si.getIdStudent()));
         if(!si.getGroup().isEmpty())
             groupLabel.setText(si.getGroup());
-        scholarShipLabel.setText(si.getScholarShipState().getValueString());
+        scholarShipLabel.setText(si.getScholarShipState()+"");
         gradesLabel.setText(Double.toString(si.getGradeAvrg()));
     }
+    private void handleStudentInfoCreation(){
+        String groupText = group.getText();
+        String scholarShipText = scholarShip.getText();
+        String gradesText = grades.getText();
+        cleanStudentInfoTextFields();
 
+        String message = (new StudentBLL()).createStudentInfo(student,groupText,scholarShipText,gradesText);
+        if(message != null) errorlog.setText(message);
+        else{
+            si = (new StudentBLL()).viewStudentInfo(student);
+            viewStudentInfo(si);
+        }
+    }
+    private void handleStudentInfoUpdate(){
+        String groupText = group.getText();
+        String scholarShipText = scholarShip.getText();
+        String gradesText = grades.getText();
+        cleanStudentInfoTextFields();
+
+        String message = (new StudentBLL()).updateStudentInfo(si,groupText,scholarShipText,gradesText);
+
+        if(message != null) errorlog.setText(message);
+        else{
+            si = (new StudentBLL()).viewStudentInfo(student);
+            viewStudentInfo(si);
+        }
+    }
+    private void handleStudentInfoDelete(){
+        cleanStudentInfoTextFields();
+        String message = (new StudentBLL()).deleteStudentInfo(si);
+        if(message != null) errorlog.setText(message);
+        else{
+            si = (new StudentBLL()).viewStudentInfo(student);
+            viewStudentInfo(si);
+        }
+    }
+    private void cleanStudentInfoTextFields(){
+        idStudent.clear();
+        group.clear();
+        scholarShip.clear();
+        grades.clear();
+    }
+
+    /**create/view/update/delete student's contact information*/
     private void viewContactInfo(ContactInformation ci){
         addressLabel.setText("No information yet");
         phoneNUmberLabel.setText("No information yet");
         emailAddressLabel.setText("No information yet");
 
-        if(ci == null)return;
+        if(ci == null) {createContact.setVisible(true);return;}
         else createContact.setVisible(false);
 
         if(!ci.getAddress().isEmpty())
@@ -218,87 +304,78 @@ public class StudentController {
         if(!ci.getEmailAddress().isEmpty())
             emailAddressLabel.setText(ci.getEmailAddress());
     }
-
-    private void handlePersonalInfoCreation(){
-        String firstNameText = firstName.getText();
-        String lastNameText = lastName.getText();
-        String icnText = icn.getText();
-        String pncText = pnc.getText();
-
-        String message = studentBLL.createPersonalInfo(firstNameText,lastNameText,icnText,pncText);
-        pi = studentBLL.viewPersonalInfo(student);
-        viewPersonalInfo(pi);
-    }
-
-    private void handlePersonalInfoUpdate(){
-        String firstNameText = firstName.getText();
-        String lastNameText = lastName.getText();
-        String icnText = icn.getText();
-        String pncText = pnc.getText();
-
-        String message = studentBLL.updatePersonalInfo(pi,firstNameText,lastNameText,icnText,pncText);
-        pi = studentBLL.viewPersonalInfo(student);
-        viewPersonalInfo(pi);
-    }
-
-    private void handleStudentInfoCreation(){
-        String idStudentText = idStudent.getText();
-        String groupText = group.getText();
-        String scholarShipText = scholarShip.getText();
-        String gradesText = grades.getText();
-
-        String messsage = studentBLL.createStudentInfo(idStudentText,groupText,scholarShipText,gradesText);
-        si = studentBLL.viewStudentInfo(student);
-        viewStudentInfo(si);
-    }
-
-    private void handleStudentInfoUpdate(){
-        String idStudentText = idStudent.getText();
-        String groupText = group.getText();
-        String scholarShipText = scholarShip.getText();
-        String gradesText = grades.getText();
-
-        String message = studentBLL.updateStudentInfo(si,idStudentText,groupText,scholarShipText,gradesText);
-        si = studentBLL.viewStudentInfo(student);
-        viewStudentInfo(si);
-    }
-
-    private void handleStudentInfoDelete(){
-        studentBLL.deleteStudentInfo(si);
-        si = studentBLL.viewStudentInfo(student);
-        viewStudentInfo(si);
-    }
-
     private void handleContactInfoCreation(){
         String addressText = address.getText();
         String phoneNumberText = phoneNumber.getText();
         String emailAddressText = emailAddress.getText();
+        cleanContactInfoTextFields();
 
-        String message = studentBLL.createContactInfo(addressText,phoneNumberText,emailAddressText);
-        ci = studentBLL.viewContactInfo(student);
-        viewContactInfo(ci);
+        String message = (new StudentBLL()).createContactInfo(student,addressText,phoneNumberText,emailAddressText);
+        if(message != null) errorlog.setText(message);
+        else {
+            ci = (new StudentBLL()).viewContactInfo(student);
+            viewContactInfo(ci);
+        }
     }
-
     private void handleContactInfoUpdate(){
         String addressText = address.getText();
         String phoneNumberText = phoneNumber.getText();
         String emailAddressText = emailAddress.getText();
+        cleanContactInfoTextFields();
 
-        String message = studentBLL.updateContactInfo(ci,addressText,phoneNumberText,emailAddressText);
-        ci = studentBLL.viewContactInfo(student);
-        viewContactInfo(ci);
+        String message = (new StudentBLL()).updateContactInfo(ci,addressText,phoneNumberText,emailAddressText);
+        if(message != null) errorlog.setText(message);
+        else {
+            ci = (new StudentBLL()).viewContactInfo(student);
+            viewContactInfo(ci);
+        }
     }
-
     private void handleContactInfoDelete(){
-        studentBLL.deleteContactInfo(ci);
-        ci = studentBLL.viewContactInfo(student);
-        viewContactInfo(ci);
+        cleanContactInfoTextFields();
+        String message = (new StudentBLL()).deleteContactInfo(ci);
+        if(message != null) errorlog.setText(message);
+        else {
+            ci = (new StudentBLL()).viewContactInfo(student);
+            viewContactInfo(ci);
+        }
+    }
+    private void cleanContactInfoTextFields(){
+        address.clear();
+        phoneNumber.clear();
+        emailAddress.clear();
     }
 
+    /**process student enrollment - search for course, enroll student for course*/
     private void handleSearchOperation(){
-        String searchValue = searchField.getText();
+        String searchCourseSession = searchField.getText();
+        course = (new StudentBLL()).searchForCourse(searchCourseSession);
+        cleanCourseSearch();
+        if(course == null) return;
+        if(!course.getName().isEmpty())
+            courseName.setText(course.getName());
+        if(!course.getSession().isEmpty())
+            courseSession.setText(course.getSession());
+        if(!course.getExamDate().toString().isEmpty())
+            courseExamDate.setText(course.getExamDate().toString());
 
     }
-
-    private void handleEnrollmentOperation(){}
+    private void handleEnrollmentOperation(){
+        String enrollmentKeyText = keyField.getText();
+        cleanCourseSearch();
+        String message = (new StudentBLL()).processEnrollment(student,course,enrollmentKeyText);
+        if(message != null) errorlog.setText(message);
+        else viewEnrolledCourses();
+    }
+    private void viewEnrolledCourses(){
+        ObservableList<String> enrolledCourses = (new StudentBLL()).findEnrolledCourses(student);
+        courses.setEditable(false);
+        courses.setItems(enrolledCourses);
+    }
+    private void cleanCourseSearch(){
+        searchField.clear();
+        keyField.clear();
+        courseName.setText("Course not found!");
+        courseSession.setText("Course not found!");
+        courseExamDate.setText("Course not found!");
+    }
 }

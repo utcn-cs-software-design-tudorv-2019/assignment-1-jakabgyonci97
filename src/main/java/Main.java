@@ -1,3 +1,5 @@
+import dal.dao.SiDAO;
+import dal.entity.StudentInformation;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import pl.controller.AdminController;

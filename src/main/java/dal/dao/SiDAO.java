@@ -28,7 +28,7 @@ public class SiDAO extends AbstractDAO<StudentInformation> {
                 if(resultSet.next()){
                     int id = resultSet.getInt("id");
                     idStudent = resultSet.getInt("idStudent");
-                    String group = resultSet.getString("group");
+                    String group = resultSet.getString("studGroup");
                     int scholarShipState = resultSet.getInt("scholarShipState");
                     double gradeAvrg = resultSet.getDouble("gradeAvrg");
 
@@ -44,5 +44,33 @@ public class SiDAO extends AbstractDAO<StudentInformation> {
             ConnectionFactory.close(resultSet);
         }
         return si;
+    }
+
+    public String createInsertStatement(StudentInformation si){
+        StringBuilder sb = new StringBuilder();
+        sb.append("INSERT INTO studentInformation (idStudent,studGroup,scholarShipState,gradeAvrg) VALUES (");
+        sb.append("'").append(si.getIdStudent()).append("',");
+        sb.append("'").append(si.getGroup()).append("',");
+        sb.append("'").append(si.getScholarShip()).append("',");
+        sb.append("'").append(si.getGradeAvrg()).append("');");
+        return sb.toString();
+    }
+
+    public String createUpdateStatement(StudentInformation si){
+        StringBuilder sb = new StringBuilder();
+        sb.append("UPDATE studentInformation SET ");
+        sb.append("idStudent = '").append(si.getIdStudent()).append("', ");
+        sb.append("studGroup = '").append(si.getGroup()).append("', ");
+        sb.append("scholarShipState = '").append(si.getScholarShip()).append("', ");
+        sb.append("gradeAvrg = '").append(si.getGradeAvrg()).append("' ");
+        sb.append("WHERE id = '").append(si.getId()).append("';");
+        return sb.toString();
+    }
+
+    public String createDeleteStatement(StudentInformation si){
+        StringBuilder sb = new StringBuilder();
+        sb.append("DELETE FROM studentInformation ");
+        sb.append("WHERE id = '").append(si.getId()).append("';");
+        return sb.toString();
     }
 }

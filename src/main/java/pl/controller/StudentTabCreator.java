@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StudentTabCreator {
-    protected static void createPersonal(Tab tab, List<TextField> textFields, List<Label> labels, List<Button> buttons){
+    protected static void createPersonal(Tab tab, List<TextField> textFields, List<Label> labels, List<Button> buttons,TextArea errorlog){
         Pane layout = new Pane();
         tab.setContent(layout);
 
@@ -77,6 +77,8 @@ public class StudentTabCreator {
         img.setLayoutX(65);
         img.setLayoutY(10);
         layout.getChildren().add(img);
+
+        layout.getChildren().add(errorlog);
     }
 
     protected static void createStudent(Tab tab,List<TextField> textFields,List<Label> labels,List<Button> buttons){
@@ -242,6 +244,7 @@ public class StudentTabCreator {
 
         courses.setLayoutX(65);
         courses.setLayoutY(300);
+        courses.setPrefWidth(600);
         layout.getChildren().add(courses);
 
         label = new Label("Search for new course");

@@ -69,4 +69,9 @@ public class ContactInformation {
                 ", emailAddress='" + emailAddress + '\'' +
                 '}';
     }
+
+    public ContactInformation clone(){
+        ContactInformation ci = new ContactInformation(this.id,this.idStudent,this.address,this.phoneNumber,this.emailAddress);
+        return ci;
+    }
 }

@@ -2,18 +2,44 @@ package pl.controller;
 
 import javafx.geometry.Orientation;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
+import pl.model.StudentProfile;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AdminTabCreator {
-    protected static void createCRUDer(Tab tab, List<TextField> textFields, List<Button> buttons, TableView<Object> students,ProgressBar fullInfo){
+    protected static void createCRUDer(Tab tab, List<TextField> textFields, List<Button> buttons, TableView<StudentProfile> students, ProgressBar fullInfo){
         Pane layout = new Pane();
         tab.setContent(layout);
 
         students.setLayoutX(20);
         students.setLayoutY(20);
+        students.setPrefWidth(680);
+        List<String> columnNames = new ArrayList<>();
+        columnNames.add("Student ID");
+        columnNames.add("First Name");
+        columnNames.add("Last Name");
+        columnNames.add("Group");
+        columnNames.add("Scholarship");
+        columnNames.add("Average");
+
+        int j = 0;
+        for(Field field: (new StudentProfile()).getClass().getDeclaredFields()){
+            TableColumn<StudentProfile,?> newCol = new TableColumn<>(columnNames.get(j++));
+            newCol.setCellValueFactory(new PropertyValueFactory<>(field.getName()));
+            newCol.setPrefWidth(110);
+            if(j == 5) newCol.setPrefWidth(150);
+            students.getColumns().add(newCol);
+        }
+        /*TableColumn<StudentProfile,Integer> idStudentColumn = new TableColumn<>("Student ID");
+        TableColumn<StudentProfile,String> firstNameColumn = new TableColumn<>("Firs Name");
+        TableColumn<StudentProfile,String> lastNameColumn = new TableColumn<>("Last Name");
+        TableColumn<StudentProfile,String> groupdColumn = new TableColumn<>("Group");
+        TableColumn<StudentProfile,String> scholarShipColumn = new TableColumn<>("Scholarship");
+        TableColumn<StudentProfile,Double> averageColumn = new TableColumn<>("Average");*/
         layout.getChildren().add(students);
 
         Label label = new Label("Student Information");

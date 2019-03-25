@@ -16,6 +16,18 @@ public class StudentInformation {
         };
         public abstract int getValueInt();
         public abstract String getValueString();
+        public static int valueOfObject(Object obj){
+            if(obj instanceof String){
+                String scholarShipName = (String) obj;
+                if(scholarShipName.compareTo("NONE") == 0) return 0;
+                if(scholarShipName.compareTo("MERIT") == 0) return 1;
+                if(scholarShipName.compareTo("ACADEMIC") == 0) return 2;
+            }
+            if(obj instanceof Integer){
+                return ((Integer)obj).intValue();
+            }
+            return -1;
+        }
     };
     private int id;
     private int idStudent;
@@ -63,12 +75,20 @@ public class StudentInformation {
         this.group = group;
     }
 
-    public scholarShip getScholarShipState() {
-        return scholarShipState;
+    public String getScholarShipState() {
+        return scholarShipState.getValueString();
     }
 
-    public void setScholarShipState(scholarShip scholarShipState) {
-        this.scholarShipState = scholarShipState;
+    public int getScholarShip(){
+        return scholarShipState.getValueInt();
+    }
+
+    public void setScholarShipState(int scholarShipState) {
+        switch(scholarShipState){
+            case 0: this.scholarShipState = scholarShip.NONE;break;
+            case 1: this.scholarShipState = scholarShip.MERIT;break;
+            case 2: this.scholarShipState = scholarShip.ACADEMIC;break;
+        }
     }
 
     public double getGradeAvrg() {
@@ -88,5 +108,15 @@ public class StudentInformation {
                 ", scholarShipState=" + scholarShipState +
                 ", gradeAvrg=" + gradeAvrg +
                 '}';
+    }
+
+    public StudentInformation clone(){
+        StudentInformation si = new StudentInformation();
+        si.setId(this.id);
+        si.setIdStudent(this.idStudent);
+        si.setGroup(this.group);
+        si.setScholarShipState(this.scholarShipState.getValueInt());
+        si.setGradeAvrg(this.gradeAvrg);
+        return si;
     }
 }

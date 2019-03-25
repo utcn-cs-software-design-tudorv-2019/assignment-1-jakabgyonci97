@@ -24,6 +24,7 @@ public class AbstractDAO<T> {
             if(connection != null){
                 System.out.println("Connection established!");
                 statement = connection.createStatement();
+                System.out.println(this.createInsertStatement(t));
                 statement.executeUpdate(this.createInsertStatement(t));
                 state = true;
             }
@@ -36,11 +37,11 @@ public class AbstractDAO<T> {
         return state;
     }
 
-    private String createInsertStatement(T t){
+    public String createInsertStatement(T t){
         StringBuilder sb = new StringBuilder();
         sb.append("INSERT INTO ").append(type.getSimpleName()).append(" (");
         for(Field field: type.getDeclaredFields()){
-            if(field.getName().compareTo("ID") != 0)
+            if(field.getName().compareTo("id") != 0)
                 sb.append(field.getName()).append(", ");
         }
         sb.deleteCharAt(sb.lastIndexOf(", "));
@@ -49,7 +50,7 @@ public class AbstractDAO<T> {
             field.setAccessible(true);
             try {
                 Object value = field.get(t);
-                if(field.getName().compareTo("ID") != 0)
+                if(field.getName().compareTo("id") != 0)
                     sb.append("'").append(value).append("',");
             }catch(IllegalArgumentException e){
                 e.printStackTrace();
@@ -83,7 +84,7 @@ public class AbstractDAO<T> {
         return state;
     }
 
-    private String createUpdateStatement(T t){
+    public String createUpdateStatement(T t){
         StringBuilder sb = new StringBuilder();
         sb.append("UPDATE ").append(type.getSimpleName()).append(" SET ");
         Integer id = 0;
@@ -91,7 +92,7 @@ public class AbstractDAO<T> {
             field.setAccessible(true);
             try {
                 Object value = field.get(t);
-                if(field.getName().compareTo("ID") != 0)
+                if(field.getName().compareTo("id") != 0)
                     sb.append(field.getName()).append(" = '").append(value).append("', ");
                 else
                     id = (Integer) value;
@@ -103,6 +104,7 @@ public class AbstractDAO<T> {
         }
         sb.deleteCharAt(sb.lastIndexOf(", "));
         sb.append("WHERE ID = ").append(id.toString()).append(" ;");
+
         return sb.toString();
     }
 
@@ -127,13 +129,13 @@ public class AbstractDAO<T> {
         return state;
     }
 
-    private String createDeleteStatement(T t){
+    public String createDeleteStatement(T t){
         StringBuilder sb = new StringBuilder();
         sb.append("DELETE FROM ");
         sb.append(type.getSimpleName());
-        sb.append(" WHERE ID = '");
+        sb.append(" WHERE id = '");
         try {
-            Field field = type.getDeclaredField("ID");
+            Field field = type.getDeclaredField("id");
             field.setAccessible(true);
             sb.append(field.get(t).toString());
         } catch (NoSuchFieldException e) {
@@ -154,7 +156,7 @@ public class AbstractDAO<T> {
             connection = ConnectionFactory.getConnection();
             if(connection != null){
                 System.out.println("Connection established!");
-                String sql = "SELECT * FROM "+type.getSimpleName()+" WHERE ID = "+ID;
+                String sql = "SELECT * FROM "+type.getSimpleName()+" WHERE id = "+ID;
                 statement = connection.createStatement();
                 resultSet = statement.executeQuery(sql);
                 try {

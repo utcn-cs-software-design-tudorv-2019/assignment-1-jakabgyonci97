@@ -22,8 +22,8 @@ public class LoginBLL {
     }
 
     private boolean loginDataValidator(String userName,String password){
-        ValidatorResponse vrUserName = Validator.validateUserName(userName,15);
-        ValidatorResponse vrPassword = Validator.validatePassword(password,12);
+        ValidatorResponse vrUserName = Validator.validateUserName(userName,15,Validator.CheckType.CHECK_ALL);
+        ValidatorResponse vrPassword = Validator.validatePassword(password,12,Validator.CheckType.CHECK_ALL);
 
         if(vrUserName.isValid() && vrPassword.isValid())
             return true;

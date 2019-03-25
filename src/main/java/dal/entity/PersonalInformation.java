@@ -80,4 +80,15 @@ public class PersonalInformation {
                 ", pnc='" + pnc + '\'' +
                 '}';
     }
+
+    public PersonalInformation clone(){
+        PersonalInformation pi = new PersonalInformation();
+        pi.setId(this.id);
+        pi.setIdStudent(this.idStudent);
+        pi.setFirstName(this.firstName);
+        pi.setLastName(this.lastName);
+        pi.setIcn(this.icn);
+        pi.setPnc(this.pnc);
+        return pi;
+    }
 }
