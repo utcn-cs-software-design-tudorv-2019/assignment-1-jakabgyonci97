@@ -1,4 +1,4 @@
-package pl.model;
+package bll.model;
 
 public class StudentProfile {
     private int idStudent;

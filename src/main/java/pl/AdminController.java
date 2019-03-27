@@ -1,11 +1,12 @@
-package pl.controller;
+package pl;
 
 import bll.AdminBLL;
-import dal.entity.Student;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import pl.model.StudentProfile;
+import bll.model.StudentProfile;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -13,7 +14,9 @@ import java.util.List;
 
 public class AdminController {
     //
-    private Student student;
+    AlertBox ab;
+    Stage window;
+    private StudentProfile student;
     private AdminBLL adminBLL;
     //crud on student
     private TableView<StudentProfile> students;
@@ -33,10 +36,12 @@ public class AdminController {
     private DatePicker startDate;
     private DatePicker endDate;
     private ListView<String> activities;
+
     public AdminController(){
         adminBLL = new AdminBLL();
-        Stage window = new Stage();
+        window = new Stage();
         window.setTitle("Administrator Profile");
+        window.setOnCloseRequest(e->handleWindowClosure());
 
         TabPane layout = new TabPane();
         Tab tab1 = new Tab("CRUD student");
@@ -51,6 +56,7 @@ public class AdminController {
         scene.getStylesheets().add("DarkTheme.css");
         window.setScene(scene);
         window.show();
+        viewStudents();
     }
 
     private void initiateCRUDerTab(Tab tab){
@@ -71,15 +77,12 @@ public class AdminController {
         textFieldList.add(scholarShup);
 
         fullInfo = new ProgressBar();
-        Button viewProfileButton = new Button("View Profile");
-        viewProfileButton.setOnAction(e->handleViewProfile());
         Button createStudentButton = new Button("Create");
         createStudentButton.setOnAction(e->handleCreateStudent());
         Button updateStudentButton = new Button("Update");
         updateStudentButton.setOnAction(e->handleUpdateStudent());
         Button deleteStudentButton = new Button("Delete");
         deleteStudentButton.setOnAction(e->handleDeleteStudent());
-        buttons.add(viewProfileButton);
         buttons.add(createStudentButton);
         buttons.add(updateStudentButton);
         buttons.add(deleteStudentButton);
@@ -92,8 +95,8 @@ public class AdminController {
         lastNameL = new Label("info");
         firstNameL = new Label("info");
         groupL = new Label("info");
-        startDate = new DatePicker();
-        endDate = new DatePicker();
+        startDate = new DatePicker();startDate.setValue(LocalDate.now());
+        endDate = new DatePicker();endDate.setValue(LocalDate.now());
         Button searchButton = new Button("Search");
         searchButton.setOnAction(e->handleStudentSearch());
         Button filterButton = new Button("Filter");
@@ -106,12 +109,11 @@ public class AdminController {
         labels.add(groupL);
 
         AdminTabCreator.createRepGen(tab,searchField,labels,startDate,endDate,searchButton,filterButton,activities);
+        ObservableList<String> ac = adminBLL.viewActivities(null);
+        activities.setItems(ac);
     }
 
-    private void handleViewProfile(){
-
-    }
-
+    /**create/view/update/delete student profiles*/
     private void handleCreateStudent(){
         String idStudentText = identifNum.getText();
         String firstNameText = firstName.getText();
@@ -119,33 +121,73 @@ public class AdminController {
         String groupText = group.getText();
         String averageText = average.getText();
         String scholarShipText = scholarShup.getText();
-        adminBLL.createStudent(idStudentText,firstNameText,lastNameText,groupText,averageText,scholarShipText);
-    }
 
+        String message = adminBLL.createStudent(idStudentText,firstNameText,lastNameText,groupText,averageText,scholarShipText);
+        if(message != null) ab = new AlertBox(message);
+        else {cleanFields();viewStudents();}
+    }
+    private void viewStudents(){
+        ObservableList<StudentProfile> sps = adminBLL.viewStudents();
+        students.setItems(sps);
+    }
     private void handleUpdateStudent(){
-        String firstNameText = firstName.getText();
-        String lastNameText = lastName.getText();
         String groupText = group.getText();
         String averageText = average.getText();
         String scholarShipText = scholarShup.getText();
 
-        adminBLL.updateStudent(student,firstNameText,lastNameText,groupText,averageText,scholarShipText);
+        StudentProfile oldStudent = students.getSelectionModel().getSelectedItem();
+        if(oldStudent == null) return;
 
+        String message = adminBLL.updateStudent(oldStudent,groupText,averageText,scholarShipText);
+        if(message != null) ab = new AlertBox(message);
+        else {cleanFields();viewStudents();}
     }
-
     private void handleDeleteStudent(){
-        adminBLL.deleteStudent(student);
+        StudentProfile oldStudent = students.getSelectionModel().getSelectedItem();
+        if(oldStudent == null) return;
+        String message = adminBLL.deleteStudent(oldStudent);
+        if(message != null) ab = new AlertBox(message);
+        else {cleanFields();viewStudents();}
+    }
+    private void cleanFields(){
+        identifNum.clear();
+        firstName.clear();
+        lastName.clear();
+        group.clear();
+        average.clear();
+        scholarShup.clear();
     }
 
+    /**generate reports based on student's activity for a time period*/
     private void handleStudentSearch(){
         String studentID = searchField.getText();
-        adminBLL.findStudent(studentID);
-    }
+        searchField.clear();
+        student = adminBLL.findStudent(studentID);
+        if(student == null){
+            lastNameL.setText("No data available");
+            firstNameL.setText("No data available");
+            groupL.setText("No data available");
+            ObservableList<String> ac = FXCollections.observableArrayList();
+            activities.setItems(ac);
+            return;
+        }
+        lastNameL.setText(student.getLastName());
+        firstNameL.setText(student.getFirstName());
+        groupL.setText(student.getGroup());
 
+        ObservableList<String> ac = adminBLL.viewActivities(student);
+        activities.setItems(ac);
+    }
     private void handleFilterAction(){
         LocalDate dateStart = startDate.getValue();
         LocalDate dateEnd = endDate.getValue();
-        adminBLL.filterActivities(student,dateStart,dateEnd);
+        ObservableList<String> activ = adminBLL.filterActivities(student,dateStart,dateEnd);
+        activities.setItems(activ);
+    }
+
+    private void handleWindowClosure(){
+        window.close();
+        new LoginController();
     }
 
 }

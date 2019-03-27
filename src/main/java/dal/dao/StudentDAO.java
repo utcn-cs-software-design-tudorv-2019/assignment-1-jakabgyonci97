@@ -2,7 +2,6 @@ package dal.dao;
 
 import dal.connection.ConnectionFactory;
 import dal.entity.Student;
-import dal.entity.User;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -41,6 +40,14 @@ public class StudentDAO extends AbstractDAO<Student> {
             ConnectionFactory.close(resultSet);
         }
         return student;
+    }
+
+    public String createInsertStatement(Student student){
+        StringBuilder sb = new StringBuilder();
+        sb.append("INSERT INTO student (id,idUser) VALUES (");
+        sb.append("'").append(student.getId()).append("',");
+        sb.append("'").append(student.getIdUser()).append("');");
+        return sb.toString();
     }
 
 

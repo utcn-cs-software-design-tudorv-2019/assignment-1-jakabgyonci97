@@ -1,4 +1,4 @@
-package bll;
+package bll.model;
 
 import java.sql.Date;
 

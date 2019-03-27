@@ -1,10 +1,10 @@
-package pl.controller;
+package pl;
 
 import javafx.geometry.Orientation;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
-import pl.model.StudentProfile;
+import bll.model.StudentProfile;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -34,12 +34,6 @@ public class AdminTabCreator {
             if(j == 5) newCol.setPrefWidth(150);
             students.getColumns().add(newCol);
         }
-        /*TableColumn<StudentProfile,Integer> idStudentColumn = new TableColumn<>("Student ID");
-        TableColumn<StudentProfile,String> firstNameColumn = new TableColumn<>("Firs Name");
-        TableColumn<StudentProfile,String> lastNameColumn = new TableColumn<>("Last Name");
-        TableColumn<StudentProfile,String> groupdColumn = new TableColumn<>("Group");
-        TableColumn<StudentProfile,String> scholarShipColumn = new TableColumn<>("Scholarship");
-        TableColumn<StudentProfile,Double> averageColumn = new TableColumn<>("Average");*/
         layout.getChildren().add(students);
 
         Label label = new Label("Student Information");
@@ -80,9 +74,7 @@ public class AdminTabCreator {
         sep.setPrefWidth(1200);
         layout.getChildren().add(sep);
 
-        buttons.get(0).setLayoutX(300);
-        buttons.get(0).setLayoutY(680);
-        for(int i=1;i<buttons.size();i++){
+        for(int i=0;i<buttons.size();i++){
             buttons.get(i).setLayoutX(620 + i*150);
             buttons.get(i).setLayoutY(680);
         }
@@ -93,6 +85,12 @@ public class AdminTabCreator {
         fullInfo.setPrefWidth(360);
         layout.getChildren().add(fullInfo);
 
+        label = new Label();
+        label.setText("Create new student: enter identification number,First name,Last name\n" +
+                "Create student information: enter identification number,group,average,scholarship status");
+        label.setLayoutX(30);
+        label.setLayoutY(550);
+        layout.getChildren().add(label);
     }
 
     protected static void createRepGen(Tab tab,TextField searchField,List<Label> labels,DatePicker start,DatePicker end,Button searchButton,Button filterButton,ListView<String> activities){

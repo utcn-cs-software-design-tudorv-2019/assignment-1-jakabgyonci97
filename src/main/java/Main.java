@@ -1,10 +1,6 @@
-import dal.dao.SiDAO;
-import dal.entity.StudentInformation;
 import javafx.application.Application;
 import javafx.stage.Stage;
-import pl.controller.AdminController;
-import pl.controller.LoginController;
-import pl.controller.StudentController;
+import pl.LoginController;
 
 
 public class Main extends Application {
@@ -15,10 +11,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        LoginController lc = new LoginController();
-        //StudentController sc = new StudentController();
-        //AdminController ac = new AdminController();
-
+        new LoginController();
     }
 
 }

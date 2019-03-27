@@ -1,4 +1,4 @@
-package pl.controller;
+package pl;
 
 import bll.LoginBLL;
 import dal.entity.Student;
@@ -13,6 +13,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
+import static java.lang.System.exit;
 
 
 public class LoginController {
@@ -51,12 +53,17 @@ public class LoginController {
         password.setMinWidth(300);
         rightPane.getChildren().addAll(userName,password);
 
-        VBox bottomPane = new VBox();
+        VBox bottomPane = new VBox(40);
         bottomPane.setAlignment(Pos.CENTER);
         bottomPane.setPadding(new Insets(20,20,100,20));
         Button login = new Button("Login");
         login.setOnAction(e->handleButtonEvent());
-        bottomPane.getChildren().add(login);
+        Button close = new Button("Close Application");
+        close.setOnAction(e->{
+            window.close();
+            exit(0);
+        });
+        bottomPane.getChildren().addAll(login,close);
 
         layout.setTop(topPane);
         layout.setLeft(leftPane);

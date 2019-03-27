@@ -1,4 +1,4 @@
-package pl.controller;
+package pl;
 
 import javafx.geometry.Orientation;
 import javafx.scene.control.*;

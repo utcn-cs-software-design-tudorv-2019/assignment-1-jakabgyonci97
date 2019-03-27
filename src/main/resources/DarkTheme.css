@@ -1,7 +1,6 @@
 .root {
     -fx-background-color: #4a515b;
 }
-
 .label {
     -fx-font-size: 11pt;
     -fx-font-family: "Segoe UI Semibold";
@@ -24,8 +23,8 @@
 }
 
 .table-view {
-    -fx-base: #1d1d1d;
-    -fx-control-inner-background: #1d1d1d;
+    -fx-base: #3b4149;
+    -fx-control-inner-background: #3b4149;
     -fx-background-color: #3b4149;
     -fx-table-cell-border-color: transparent;
     -fx-table-header-border-color: transparent;
@@ -250,7 +249,7 @@
 }
 .tab-pane {
     -fx-tab-min-width: 8.583em;
-    -fx-tab-max-width: 8.583em;
+    -fx-tab-max-width: 16.583em;
     -fx-tab-min-height: 2.75em;
     -fx-tab-max-height: 2.75em;
 }

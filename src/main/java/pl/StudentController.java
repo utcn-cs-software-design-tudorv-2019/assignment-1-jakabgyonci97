@@ -1,4 +1,4 @@
-package pl.controller;
+package pl;
 
 import bll.StudentBLL;
 import dal.entity.*;
@@ -12,6 +12,7 @@ import java.util.List;
 
 public class StudentController {
     //models
+    Stage window;
     private Student student;
     private PersonalInformation pi;
     private StudentInformation si;
@@ -55,8 +56,9 @@ public class StudentController {
         si = (new StudentBLL()).viewStudentInfo(student);
         ci = (new StudentBLL()).viewContactInfo(student);
 
-        Stage window = new Stage();
+        window = new Stage();
         window.setTitle("Student Profile");
+        window.setOnCloseRequest(e->handleWindowClosure());
         errorlog = new TextArea();
         errorlog.setLayoutX(630);
         errorlog.setLayoutY(30);
@@ -377,5 +379,10 @@ public class StudentController {
         courseName.setText("Course not found!");
         courseSession.setText("Course not found!");
         courseExamDate.setText("Course not found!");
+    }
+
+    private void handleWindowClosure(){
+        window.close();
+        new LoginController();
     }
 }

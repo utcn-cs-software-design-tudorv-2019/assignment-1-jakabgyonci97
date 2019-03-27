@@ -43,4 +43,13 @@ public class UserDAO extends AbstractDAO<User> {
         }
         return user;
     }
+
+    public String createInsertStatement(User user){
+        StringBuilder sb = new StringBuilder();
+        sb.append("INSERT INTO user (userName,password,userType) VALUES (");
+        sb.append("'").append(user.getUserName()).append("', ");
+        sb.append("'").append(user.getPassword()).append("', ");
+        sb.append("'").append(user.getUserType()).append("');");
+        return sb.toString();
+    }
 }
